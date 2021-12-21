@@ -128,8 +128,7 @@ def shipping_data(sender, recipient, order_number, commercial_name,
 
     if any(p.country_id and p.country_id.code != 'FR'
            for p in (sender, recipient)):
-        # Colissimo Export/ Return International
-        product_code = 'COLI' if not is_return else 'CORI'
+        product_code = 'DOS' if not is_return else 'CORI'
     else:
         product_code = 'DOS' if not is_return else 'CORE'
 
@@ -139,6 +138,11 @@ def shipping_data(sender, recipient, order_number, commercial_name,
         'depositDate': deposit_date.strftime('%Y-%m-%d'),
         'commercialName': commercial_name,
     }
+
+    # Choose DPD as a local distributor in Germany
+    if not is_return and any(p.country_id and p.country_id.code == 'DE'
+                             for p in (sender, recipient)):
+        service['reseauPostal'] = 0
 
     parcel = {'weight': weight,
               'insuranceValue': int(insurance_value * 100)}

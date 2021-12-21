@@ -67,20 +67,36 @@ class CrmLeadShippingTC(BaseShippingTC):
         self.lead.partner_id.country_id = self._country('FR')
         data = shipping_data(**base_kwargs)
         self.assertEqual(data['letter']['service']['productCode'], 'DOS')
+        self.assertFalse("reseauPostal" in data['letter']['service'])
 
         # French return label
         data = shipping_data(is_return=True, **base_kwargs)
         self.assertEqual(data['letter']['service']['productCode'], 'CORE')
+        self.assertFalse("reseauPostal" in data['letter']['service'])
 
         # International label
         self.lead.partner_id.country_id = self._country('BE')
         data = shipping_data(**base_kwargs)
-        self.assertEqual(data['letter']['service']['productCode'], 'COLI')
+        self.assertEqual(data['letter']['service']['productCode'], 'DOS')
+        self.assertFalse("reseauPostal" in data['letter']['service'])
 
         # International Return label
         self.lead.partner_id.country_id = self._country('BE')
         data = shipping_data(is_return=True, **base_kwargs)
         self.assertEqual(data['letter']['service']['productCode'], 'CORI')
+        self.assertFalse("reseauPostal" in data['letter']['service'])
+
+        # International label
+        self.lead.partner_id.country_id = self._country('DE')
+        data = shipping_data(**base_kwargs)
+        self.assertEqual(data['letter']['service']['productCode'], 'DOS')
+        self.assertEqual(data['letter']['service']['reseauPostal'], 0)
+
+        # International Return label
+        self.lead.partner_id.country_id = self._country('DE')
+        data = shipping_data(is_return=True, **base_kwargs)
+        self.assertEqual(data['letter']['service']['productCode'], 'CORI')
+        self.assertFalse("reseauPostal" in data['letter']['service'])
 
     def _print_outward_labels(self, leads):
         act = self.env.ref('commown_shipping.action_print_outward_label_lead')
