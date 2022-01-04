@@ -5,8 +5,9 @@ import urllib
 import logging
 from datetime import datetime
 
-import pytz
 import iso8601
+import phonenumbers
+import pytz
 import requests
 from pprint import pformat
 
@@ -76,7 +77,11 @@ class ContractTemplateAbstractDiscountLine(models.AbstractModel):
 
             contract = contract_line.analytic_account_id
             partner = contract.partner_id
-            identifier = campaign.coop_partner_identifier(partner)
+            identifier = None
+            try:
+                identifier = campaign.coop_partner_identifier(partner)
+            except phonenumbers.NumberParseException:
+                pass
             if not identifier:
                 _logger.warning(
                     u"Couldn't build a partner identifier for a coop campaign."
