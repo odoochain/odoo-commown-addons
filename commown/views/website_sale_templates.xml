@@ -191,13 +191,4 @@
 
   </template>
 
-  <!-- Display email input no matter the mode 'billing': we need it for delivery too -->
-  <template id="address" inherit_id="website_sale.address">
-
-    <xpath expr="//input[@name='email']/ancestor::t[1]" position="attributes">
-      <attribute name="t-if">True</attribute>
-    </xpath>
-
-  </template>
-
 </odoo>
