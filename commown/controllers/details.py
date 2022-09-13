@@ -25,6 +25,7 @@ class CustomerPortal(CustomerPortal):
         "id_card1",
         "id_card2",
         "proof_of_address",
+        "company_record",
         "state_id",
     ]
 
