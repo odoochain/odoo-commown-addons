@@ -1,0 +1,19 @@
+<odoo>
+
+  <!-- Modify login page for website ID 1 only -->
+  <record id="b2c_login" model="ir.ui.view">
+    <field name="name">Web login page for B2C customers</field>
+    <field name="key">web.login</field>
+    <field name="inherit_id" ref="web.login"/>
+    <field name="arch" type="xml">
+      <xpath expr="//input[@name='csrf_token']" position="before">
+        <t t-set="b2b_website" t-value="env.ref('website_sale_b2b.b2b_website')"/>
+        <div t-if="request.website != b2b_website" class="text-danger">
+          <p>Les clients professionnels ont désormais un site dédié et doivent se connecter
+          <a t-att-href="request.httprequest.scheme + '://' + (b2b_website.domain or 'localhost:8069') + '/my/home'">ici</a>.</p>
+        </div>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>
