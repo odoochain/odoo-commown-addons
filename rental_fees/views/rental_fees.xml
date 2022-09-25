@@ -66,6 +66,15 @@
               </tree>
             </field>
           </group>
+          <group name="computed_fees">
+            <field name="computed_fees_ids">
+              <tree default_order="date">
+                <field name="date"/>
+                <field name="fees"/>
+                <field name="invoice_id"/>
+              </tree>
+            </field>
+          </group>
         </sheet>
       </form>
     </field>

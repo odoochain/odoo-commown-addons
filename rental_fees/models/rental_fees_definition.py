@@ -41,6 +41,15 @@ class RentalFeesDefinition(models.Model):
         copy=False,
     )
 
+    computed_fees_ids = fields.One2many(
+        comodel_name="rental_fees.computed_fees",
+        string="Computed fees",
+        inverse_name="fees_definition_id",
+        readonly=True,
+        cascade="delete",
+        copy=False,
+    )
+
     @api.constrains("partner_id", "product_template_id", "order_ids")
     def _check_no_definition_override(self):
         for fees_def in self:
@@ -140,3 +149,46 @@ class RentalFeesDefinitionLine(models.Model):
         required=True,
         default=1.0,
     )
+
+
+class RentalFeesComputedFees(models.Model):
+    _name = "rental_fees.computed_fees"
+
+    fees_definition_id = fields.Many2one(
+        "rental_fees.definition",
+        string="Fees definition",
+        required=True,
+    )
+
+    date = fields.Date(
+        string="Computation date",
+        help="Last rental day taken into account (must be < today)",
+        required=True,
+        default=fields.Date.today,
+    )
+
+    fees = fields.Float(
+        string="Computed fees",
+        required=True,
+    )
+
+    details = fields.Text(
+        string="Details",
+        help="",
+    )
+
+    invoice_id = fields.Many2one(
+        "account.invoice",
+        string="Invoice",
+        help="The supplier invoice of the computed fees",
+        required=True,
+    )
+
+    @api.constrains("date")
+    def _check_date(self):
+        today = fields.Date.today()
+        for record in self:
+            if record.date > today:
+                raise models.ValidationError(
+                    _("Fees cannot be computed in the future.")
+                )
